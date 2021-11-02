@@ -3,7 +3,7 @@
 int main()
 {
 
-    //srand(time(NULL));
+    // srand(time(NULL));
     srand(48);
     Uint8 const *keystates;
 
@@ -20,7 +20,7 @@ int main()
     int coll = 0;
     float anim = 0.;
     float anim_boule = 0.;
-    //int periode = 0;
+    // int periode = 0;
 
     SDL_Rect window_dimensions = {0};
 
@@ -109,7 +109,7 @@ int main()
     SDL_bool
         program_on = SDL_TRUE, // Booléen pour dire que le programme doit continuer
         paused = SDL_FALSE;    // Booléen pour dire que le programme est en pause
-    //ecran_debut(window, renderer, font);
+    // ecran_debut(window, renderer, font);
     while (program_on)
     {                    // La boucle des évènements
         SDL_Event event; // Evènement à traiter
@@ -178,14 +178,14 @@ int main()
             currentTime = SDL_GetTicks();
             delta_tps += currentTime - lastTime;
             lastTime = currentTime;
-            //calcul perso
+            // calcul perso
             if (delta_tps > PERIODE)
             {
-                //for (int u = 0; u < perso->vitesse; ++u)
+                // for (int u = 0; u < perso->vitesse; ++u)
                 deplacement_perso(map, perso, &vertical, &horizontal);
-                //printf("v %d h %d\n", vertical, horizontal);
+                // printf("v %d h %d\n", vertical, horizontal);
 
-                //calcul boule
+                // calcul boule
                 deplacement_toutes_boules(map, liste_boules, perso->pos_cour);
 
                 delta_tps = 0;
@@ -196,12 +196,17 @@ int main()
 
             affichage_ecran(window, renderer, font, delta_tps, anim, perso, liste_boules, &nb_boules, liste_bombes, &nb_bombes, texture_mur, map);
 
-            //affichage_score(window,renderer,font);
+            // affichage_score(window,renderer,font);
 
             coll = collision(window, renderer, delta_tps, perso, liste_boules, &nb_boules, liste_bombes, &nb_bombes, map);
             if (coll == 1 || coll == -1 || nb_boules == 0)
             {
                 program_on = SDL_FALSE;
+                if (perso->vie <= 0)
+                {
+                    coll = 1;
+                    nb_boules = 1;
+                }
             }
             else
             {

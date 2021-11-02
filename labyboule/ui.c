@@ -36,9 +36,9 @@ void affichage_texte(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font,
     pos.w = pos.w * taille;
     pos.h = pos.h * taille;
 
-    //SDL_GetWindowSize(window, &pos.x, &pos.y);
-    //pos.x = x - pos.w / 2;
-    //pos.y = y + pos.h / 2;
+    // SDL_GetWindowSize(window, &pos.x, &pos.y);
+    // pos.x = x - pos.w / 2;
+    // pos.y = y + pos.h / 2;
     pos.x = x;
     pos.y = y;
     SDL_RenderCopy(renderer, text_texture, NULL, &pos); // Ecriture du texte dans le renderer
@@ -51,7 +51,7 @@ void ecran_fin(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font, int c
     SDL_RenderClear(renderer);
     SDL_SetRenderDrawColor(renderer, 250, 250, 250, 255);
 
-    //printf("coll %d ", coll);
+    // printf("coll %d ", coll);
     if (coll == 1)
     {
         affichage_texte(window, renderer, font, "Game Over !", 1, 200, HAUTEUR_FENETRE / 4, 250, 250, 250, 255);
@@ -63,12 +63,12 @@ void ecran_fin(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font, int c
         affichage_texte(window, renderer, font, "Une bombe a explose vers vous.", 1, 100, 1 * HAUTEUR_FENETRE / 2, 250, 250, 250, 255);
     }
     else
-
+    {
         affichage_texte(window, renderer, font, "Victoire !", 1, 200, HAUTEUR_FENETRE / 4, 250, 250, 250, 255);
-    affichage_texte(window, renderer, font, "Tu as fait exploser toutes les pokeballs.", 0.7, 10, 1 * HAUTEUR_FENETRE / 2, 250, 250, 250, 255);
-}
-SDL_RenderPresent(renderer);
-SDL_Delay(2000);
+        affichage_texte(window, renderer, font, "Tu as fait exploser toutes les pokeballs.", 0.7, 10, 1 * HAUTEUR_FENETRE / 2, 250, 250, 250, 255);
+    }
+    SDL_RenderPresent(renderer);
+    SDL_Delay(2000);
 }
 
 void ecran_debut(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font)
@@ -144,11 +144,11 @@ void gestion_affichage_effet(SDL_Window *window, SDL_Renderer *renderer,
         {
             SDL_Delay(TEMPS_FRAME_EFFET);
             affichage_effet(window, renderer, my_texture, type_effet, position, delta, i);
-            //affich
+            // affich
             SDL_RenderPresent(renderer);
-            //SDL_RenderClear(renderer);
+            // SDL_RenderClear(renderer);
         }
-        //SDL_Delay(200);
+        // SDL_Delay(200);
         SDL_DestroyTexture(my_texture);
     }
     else
@@ -166,16 +166,16 @@ void affichage_ecran(SDL_Window *window, SDL_Renderer *renderer, TTF_Font *font,
 
     SDL_RenderClear(renderer);
 
-    //affichage fond
+    // affichage fond
     play_texture_mur(window, renderer, texture_mur, map);
 
-    //printf("nb de bombes : %d\n",nb_bombes);
+    // printf("nb de bombes : %d\n",nb_bombes);
     affichage_liste_bombes(window, renderer, liste_bombes);
 
-    //affichage_entite
-    //affichage entite perso
+    // affichage_entite
+    // affichage entite perso
     affichage_entite(window, renderer, perso, delta_tps, anim * 1);
-    //affichage entite boule
+    // affichage entite boule
     for (int k = 0; k < NB_BOULES; ++k)
     {
         if (liste_boules[k] != NULL)
