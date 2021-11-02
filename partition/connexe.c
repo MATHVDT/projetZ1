@@ -1,196 +1,224 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <time.h>
 #include "connexe.h"
-
-/*
-void matrice_adjacence(int mat[LIGNES][COLONNES])
-{
-    for (int i=0;i<LIGNES;i++)
-    {   
-        for (int j=0;j<i;j++)
-        {
-            mat[i][j] = mat[j][i];
-        }
-        mat[i][i] = 0;
-        for (int j=i+1;j<COLONNES;j++)
-        {
-            mat[i][j] = rand()%2;
-        }
-    }
-}
-
-void graph_matrice(FILE *fichier, int mat[LIGNES][COLONNES])
-{
-    fprintf(fichier, "graph {\n");
-    int min = fmin(LIGNES,COLONNES);
-
-    for (int i=0;i<LIGNES;i++)
-    {   
-        fprintf(fichier,"\t%d\n",i);
-        for (int j=i+1;j<min;j++)
-        {
-            if (mat[i][j] == 1) fprintf(fichier,"\t%d -- %d\n",i,j);
-        }
-        for (int j=min;j<COLONNES;j++)
-        {
-            fprintf(fichier,"\t%d\n",j);
-        }
-    }
-    fprintf(fichier, "}");
-}
-
-void composantes_connexes(int mat[LIGNES][COLONNES], int *classes, int *hauteurs)
-{
-    creer(classes,hauteurs);
-
-    for (int i=0;i<LIGNES;i++)
-    {
-        for (int j=0;j<COLONNES;j++)
-        {
-            if (mat[i][j] == 1) fusion(i,j,classes,hauteurs);
-        }
-    }
-
-    FILE *fichiergraph = NULL;
-    fichiergraph = fopen("composantes_connexes.dot","w");
-
-
-    if (fichiergraph)
-    {
-        graph_partition(//printf("ok\n");
-*/
-
-//fonction de passage d'un noeud a son entier
-int noeud_entier(int i)
-{
-    return i; //le numero du noeud correspond a son entier
-}
-
-int *allocation(int *tab, int *taille)
-{
-    *taille = (*taille) * 2;
-    int *nouvtab = (int *)malloc((*taille) * sizeof(int));
-
-    for (int k = 0; k < (*taille) / 2; k++)
-    {
-        nouvtab[k] = tab[k];
-    }
-    return nouvtab;
-}
-
-void ajouter(int **tab, int *taille, int *nb_elements, int i, int j)
-{
-    if (*taille == *nb_elements)
-    {
-        *tab = allocation(*tab, taille);
-        //printf("taille augmentee\n");
-    }
-    //printf("a        i : %d j: %d\n", i, j);
-
-    (*tab)[*nb_elements] = i;
-    (*nb_elements)++;
-    (*tab)[*nb_elements] = j;
-    (*nb_elements)++;
-    //printf(" tab i,j = %d,%d\n", tab[*nb_elements-2], tab[*nb_elements-1]);
-}
-
-void draw_graph(int *noeuds, int *aretes, FILE *fichier, int nb_elements)
-{
-    fprintf(fichier, "graph {\n");
-    int k = 0;
-
-    for (int l = 0; l < TAILLE; l++)
-    {
-        fprintf(fichier, "\t%d\n", noeuds[l]);
-    }
-
-    while (k < nb_elements)
-    {
-        fprintf(fichier, "\t%d -- %d\n", noeud_entier(aretes[k]), noeud_entier(aretes[k + 1]));
-        k += 2;
-    }
-    fprintf(fichier, "}");
-}
-
-void composantes_connexes(int *aretes, int nb_elements, int *classes, int *hauteurs)
-{
-    int k = 0;
-    while (k < nb_elements)
-    {
-        fusion(noeud_entier(aretes[k]), noeud_entier(aretes[k + 1]), classes, hauteurs);
-        k += 2;
-    }
-
-    FILE *fichiergraph = NULL;
-    fichiergraph = fopen("composantes_connexes.dot", "w");
-
-    if (fichiergraph)
-    {
-        graph_partition(fichiergraph, classes);
-        //system("display nom");
-        fclose(fichiergraph);
-    }
-}
 
 int main_connexe()
 {
+    srand(48);
+
     /*
-    int mat[LIGNES][COLONNES];
-    int classes[TAILLE];
-    int hauteurs[TAILLE];
-    srand(time(NULL));
+    int graph_mat[NB_LIGNE_MAT][NB_COLONNE_MAT];
+    init_mat_alea(graph_mat);
 
-    FILE *fichier = NULL;
-    fichier = fopen("graph_matrice.dot", "w");
+    afficher_matrice(graph_mat);
+    graphviz_affiche_graph_mat(graph_mat);
 
-    if (fichier == NULL)
+    int part_connexe[2][N];
+    int hauteur_part[N];
+    creer_partition_arbo(part_connexe, hauteur_part);
+    connexe_graph_mat(part_connexe, hauteur_part, graph_mat);
+    graphviz_affiche_arbo(part_connexe);
+*/
+
+    graph_couple_t *graph = init_graph_couple_alea();
+
+    graphviz_affiche_graph_couple(graph);
+
+    int part_connexe[2][N];
+    int hauteur_part[N];
+    creer_partition_arbo(part_connexe, hauteur_part);
+    connexe_graph_couple(part_connexe, hauteur_part, graph);
+    graphviz_affiche_arbo(part_connexe);
+    liberer_graph_couple(graph);
+
+    return 0;
+}
+
+void afficher_matrice(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT])
+{
+    for (int i = 0; i < NB_LIGNE_MAT; i++)
     {
-        printf("erreur d'ouverture du fichier\n");
-        exit(EXIT_FAILURE);
-    }
-    */
-
-    int classes[TAILLE];
-    int hauteurs[TAILLE];
-    srand(time(NULL));
-
-    int noeuds[TAILLE];
-    //int aretes[8 * TAILLE]; //s'assurer que le nombre de cases est pair (couple d'entiers)
-    int *aretes = (int *) malloc(8*TAILLE*sizeof(int));
-    int taille = 8 * TAILLE;
-    int nb_elements = 0;
-
-    //initialisation
-    for (int i = 0; i < TAILLE; i++)
-    {
-        noeuds[i] = i;
-    }
-
-    for (int i = 0; i < TAILLE; i++)
-    {
-        for (int j = i + 1; j < TAILLE; j++)
+        for (int j = 0; j < NB_COLONNE_MAT; j++)
         {
-            int valeur = rand() % 2;
-            if (valeur)
-            {
-                ajouter(&aretes, &taille, &nb_elements, i, j);//
-            }
+            printf("| %d ", mat[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+void init_mat_alea(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT])
+{
+    int v;
+    for (int i = 0; i < NB_LIGNE_MAT; i++)
+    {
+        for (int j = i + 1; j < NB_COLONNE_MAT; j++)
+        {
+            v = rand() % 10;
+            if (v == 1)
+                mat[i][j] = 1;
+            else
+                mat[i][j] = 0;
+        }
+        for (int j = 0; j <= i; j++)
+        {
+            mat[i][j] = 0;
+        }
+    }
+}
+
+void fichier_graphviz_graph_mat(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT])
+{
+    FILE *fichier = NULL;
+    system("rm graph.dot");
+    fichier = fopen("graph.dot", "w");
+    if (fichier == NULL)
+        exit(EXIT_FAILURE);
+
+    fprintf(fichier, "graph { ");
+    for (int i = 0; i < NB_LIGNE_MAT; i++)
+    {
+        for (int j = i + 1; j < NB_COLONNE_MAT; j++)
+        {
+            if (mat[i][j] == 1)
+                fprintf(fichier, "\n\t%d--%d", i, j);
+            else
+                fprintf(fichier, "\n\t%d\n\t%d", i, j);
         }
     }
 
-    FILE *fichier = NULL;
-    fichier = fopen("graph.dot", "w");
+    fprintf(fichier, "\n} ");
 
-    if (fichier)
+    fclose(fichier);
+}
+
+void graphviz_affiche_graph_mat(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT])
+{
+    fichier_graphviz_graph_mat(mat);
+    system("dot -Tjpg graph.dot -o img.jpg");
+    system("display ./img.jpg 2> /dev/null");
+}
+
+void connexe_graph_mat(int part[2][N], int hauteur[N], int mat[N][N])
+{
+    for (int i = 0; i < NB_LIGNE_MAT; i++)
     {
-        draw_graph(noeuds, aretes, fichier, nb_elements);
-        creer(classes, hauteurs);
-        composantes_connexes(aretes, nb_elements, classes, hauteurs);
-        //system("dot -Tjpg graph.dot -o graph.jpg");
-        //system("dot -Tjpg composantes_connexes.dot -o composantes_connexes.jpg");
-        fclose(fichier);
+        for (int j = i + 1; j < NB_COLONNE_MAT; j++)
+        {
+            if (mat[i][j] == 1)
+            {
+                //printf("i=%d et j=%d\n", i, j);
+                fusion_arbo(part, hauteur, i, j);
+            }
+        }
     }
-    return 0;
+}
+
+graph_couple_t *init_graph_couple_en_grille()
+{
+    graph_couple_t *graph_couple = (graph_couple_t *)malloc(sizeof(graph_couple_t));
+    if (graph_couple)
+    {
+        graph_couple->nb_noeud = N;
+        graph_couple->nb_arete = 0;
+        couple_t *couple_tmp = malloc(sizeof(couple_t) * 2 * graph_couple->nb_noeud - NB_COLONNE_LABY - NB_LIGNE_LABY);
+        //On genere le graph avec toutes les aretes sur la grille en tenant compte des voisins
+        for (int i = 0; i < graph_couple->nb_noeud; i++)
+        {
+            if ((i + 1) % NB_COLONNE_LABY != 0)
+            {
+                couple_tmp[graph_couple->nb_arete].a = i;
+                couple_tmp[graph_couple->nb_arete].b = i + 1;
+                graph_couple->nb_arete++;
+            }
+            if (i + NB_COLONNE_LABY < graph_couple->nb_noeud)
+            {
+                couple_tmp[graph_couple->nb_arete].a = i;
+                couple_tmp[graph_couple->nb_arete].b = i + NB_COLONNE_LABY;
+                graph_couple->nb_arete++;
+            }
+        }
+        graph_couple->liste_couple = (couple_t *)malloc(sizeof(couple_t) * graph_couple->nb_arete);
+        for (int k = 0; k < graph_couple->nb_arete; k++)
+        {
+            graph_couple->liste_couple[k].a = couple_tmp[k].a;
+            graph_couple->liste_couple[k].b = couple_tmp[k].b;
+        }
+        free(couple_tmp);
+    }
+    return graph_couple;
+}
+graph_couple_t *init_graph_couple_alea()
+{
+    graph_couple_t *graph_couple = (graph_couple_t *)malloc(sizeof(graph_couple_t));
+    if (graph_couple)
+    {
+        graph_couple->nb_noeud = N;
+        graph_couple->nb_arete = 0;
+        couple_t *couple_tmp = malloc(sizeof(couple_t) * 2 * graph_couple->nb_noeud - NB_COLONNE_LABY - NB_LIGNE_LABY);
+        int v;
+        
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = i + 1; j < N; j++)
+            {
+                v = rand() % ALEA_GEN;
+                if (v == 1 )
+                {
+                    couple_tmp[graph_couple->nb_arete].a = i;
+                    couple_tmp[graph_couple->nb_arete].b = j;
+                    graph_couple->nb_arete++;
+                }
+            }
+        }
+        
+        graph_couple->liste_couple = (couple_t *)malloc(sizeof(couple_t) * graph_couple->nb_arete);
+        for (int k = 0; k < graph_couple->nb_arete; k++)
+        {
+            graph_couple->liste_couple[k].a = couple_tmp[k].a;
+            graph_couple->liste_couple[k].b = couple_tmp[k].b;
+        }
+        free(couple_tmp);
+    }
+    return graph_couple;
+}
+
+void connexe_graph_couple(int part_connexe[2][N], int hauteur_part[N], graph_couple_t *graph)
+{
+    for (int i = 0; i < graph->nb_arete; i++)
+    {
+        fusion_arbo(part_connexe, hauteur_part, graph->liste_couple[i].a, graph->liste_couple[i].b);
+    }
+}
+
+void fichier_graphviz_graph_couple(graph_couple_t *graph)
+{
+    FILE *fichier = NULL;
+    //system("rm graph.dot");
+    fichier = fopen("graph.dot", "w");
+    if (fichier == NULL)
+        exit(EXIT_FAILURE);
+
+    fprintf(fichier, "graph { ");
+    for (int i = 0; i < graph->nb_arete; i++)
+    {
+        //printf("i=%d\n", i);
+        fprintf(fichier, "\n\t%d--%d", graph->liste_couple[i].a, graph->liste_couple[i].b);
+    }
+    for (int i = 0; i < graph->nb_noeud; i++)
+        fprintf(fichier, "\n\t%d", i);
+
+    fprintf(fichier, "\n} ");
+
+    fclose(fichier);
+}
+
+void graphviz_affiche_graph_couple(graph_couple_t *graph)
+{
+    fichier_graphviz_graph_couple(graph);
+    system("dot -Tjpg graph.dot -o img.jpg");
+    system("display ./img.jpg 2> /dev/null");
+}
+
+void liberer_graph_couple(graph_couple_t *graph)
+{
+    free(graph->liste_couple);
+    free(graph);
 }

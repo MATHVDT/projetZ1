@@ -1,86 +1,115 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
 #include "kruskal.h"
-
-void arbre_couvrant(int *nouv_aretes, int *nb_aretes, int *aretes, int *nb_elements, int *classes, int *hauteurs, int nouv_taille)
-{
-    int i = 0;
-    while (i < *nb_elements)
-    {
-        int sommet1 = aretes[i];
-        int sommet2 = aretes[i + 1];
-        int classe1 = recuperer_classe(sommet1,classes);
-        int classe2 = recuperer_classe(sommet2,classes);
-        //printf("couple: %d %d\n", sommet1, sommet2);
-
-        if (classe1 != classe2)
-        {
-            //printf("classes avant : %d %d\n",classe1,classe2);
-            //printf("hauteurs avant : %d %d\n",hauteurs[sommet1],hauteurs[sommet2]);
-            fusion(sommet1, sommet2, classes, hauteurs);
-            //printf("hauteurs apres : %d %d\n",hauteurs[sommet1],hauteurs[sommet2]);
-            //printf("classes apres : %d %d\n\n",classe1,classe2);
-            ajouter(&nouv_aretes, &nouv_taille, nb_aretes, sommet1, sommet2);
-        }
-        i += 2;
-    }
-}
 
 int main_kruskal()
 {
-    int classes[TAILLE];
-    int hauteurs[TAILLE];
-    //srand(time(NULL));
-    srand(42);
+    //generation graph couple
+    graph_couple_t *graph = NULL;
+    graph = init_graph_couple_en_grille();
+    graphviz_affiche_graph_couple(graph);
 
-    int noeuds[TAILLE];
-    //int aretes[8*TAILLE];
-    int *aretes = (int *)malloc(sizeof(int) * 8 * TAILLE); //s'assurer que le nombre de cases est pair (couple d'entiers)
-    int taille = 8 * TAILLE;
-    int nb_elements = 0;
+    /* //réer une partition dont les éléments sont les nœuds du graphe
+    int part_connexe[2][N];
+    int hauteur_part[N];
+    creer_partition_arbo(part_connexe, hauteur_part);
+    connexe_graph_couple(part_connexe, hauteur_part, graph);
+    graphviz_affiche_arbo(part_connexe);
+*/
+    //en calculer une forêt couvrante de poids minimal
+    graph_couple_t *arbre_couvrant = NULL;
+    arbre_couvrant = calcul_foret_couvrant(graph);
+    graphviz_affiche_graph_couple(arbre_couvrant);
 
-    //int nouv_aretes[8 * TAILLE];
-    int *nouv_aretes = (int *)malloc(sizeof(int) * 8 * TAILLE);
-    int nb_aretes = 0;
-    int nouv_taille = 8 * TAILLE;
+    liberer_graph_couple(graph);
+    liberer_graph_couple(arbre_couvrant);
 
-    //initialisation
-    for (int i = 0; i < TAILLE; i++)
+    return 0;
+}
+
+graph_couple_t *calcul_foret_couvrant(graph_couple_t *graph)
+{
+
+    //Ordonner par ordre croissant les arete de graph en fct de leur poids
+
+    graph_couple_t *arbre = (graph_couple_t *)malloc(sizeof(graph_couple_t));
+    int part[2][N];
+    int hauteur[N];
+    creer_partition_arbo(part, hauteur);
+    afficher_partition(part);
+    if (arbre)
     {
-        noeuds[i] = i;
-    }
-
-    for (int i = 0; i < TAILLE; i++)
-    {
-        for (int j = i + 1; j < TAILLE; j++)
+        arbre->nb_noeud = N;
+        arbre->nb_arete = 0;
+        couple_t *couple_tmp = malloc(sizeof(couple_t) * graph->nb_arete);
+        int a, b;
+        printf("nb arete totale = %d\n", graph->nb_arete);
+        for (int i = 0; i < graph->nb_arete; i++)
         {
-            int valeur = rand() % 2;
-            if (valeur)
+            a = graph->liste_couple[i].a;
+            b = graph->liste_couple[i].b;
+            //printf("(a,b)=(%d,%d)\n", a,b);
+            //printf("classe cl(a)=%d, cl(b)=%d\n", recuperer_classe(part, a), recuperer_classe(part, b));
+            if (recuperer_classe_arbo(part, a) != recuperer_classe_arbo(part, b))
             {
-                ajouter(&aretes, &taille, &nb_elements, i, j);
-                //printf("i : %d \t j: %d\n", i, j);
+                fusion_arbo(part, hauteur, b, a);
+                couple_tmp[arbre->nb_arete] = graph->liste_couple[i];
+                arbre->nb_arete++;
+                //printf("arete ajoutee = %d\n", arbre->nb_arete);
+                //printf("\n");
+                //afficher_partition(part);
             }
         }
+
+        arbre->liste_couple = (couple_t *)malloc(sizeof(couple_t) * arbre->nb_arete);
+        for (int k = 0; k < arbre->nb_arete; k++)
+        {
+            arbre->liste_couple[k] = couple_tmp[k];
+        }
+        free(couple_tmp);
     }
+    return arbre;
+}
 
-    FILE *fichier = NULL;
-    fichier = fopen("graph.dot", "w");
-    FILE *foret = NULL;
-    foret = fopen("foret.dot", "w");
+graph_couple_t *calcul_quasi_foret_couvrant(graph_couple_t *graph, float p)
+{
+    //Ordonner par ordre croissant les arete de graph en fct de leur poids
 
-    if (fichier && foret)
+    graph_couple_t *arbre = (graph_couple_t *)malloc(sizeof(graph_couple_t));
+    int part[2][N];
+    int hauteur[N];
+    creer_partition_arbo(part, hauteur);
+    afficher_partition(part);
+    if (arbre)
     {
-        //printf("ok\n");
-        draw_graph(noeuds, aretes, fichier, nb_elements);
-        //printf("taille : %d\t nb_elements : %d\n",taille,nb_elements);
-        
-        creer(classes,hauteurs);
-        arbre_couvrant(nouv_aretes,&nb_aretes,aretes,&nb_elements,classes,hauteurs,nouv_taille);
-        draw_graph(noeuds,nouv_aretes,foret,nb_aretes);
-        //system("dot -Tjpg graph.dot -o graph.jpg");
-        //system("dot -Tjpg foret.dot -o foret.jpg");
-        fclose(fichier);
+        arbre->nb_noeud = N;
+        arbre->nb_arete = 0;
+        couple_t *couple_tmp = malloc(sizeof(couple_t) * graph->nb_arete);
+        int a, b;
+        float alpha;
+        for (int i = 0; i < graph->nb_arete; i++)
+        {
+            a = graph->liste_couple[i].a;
+            b = graph->liste_couple[i].b;
+            printf("alpha=%f\n", alpha);
+            alpha = (float)(rand() % 100) / (float)100;
+            if (recuperer_classe_arbo(part, a) != recuperer_classe_arbo(part, b))
+            {
+                fusion_arbo(part, hauteur, b, a);
+                couple_tmp[arbre->nb_arete] = graph->liste_couple[i];
+                arbre->nb_arete++;
+            }
+            else if (alpha < p)
+            {
+                couple_tmp[arbre->nb_arete] = graph->liste_couple[i];
+                arbre->nb_arete++;
+            }
+        }
+
+        arbre->liste_couple = (couple_t *)malloc(sizeof(couple_t) * arbre->nb_arete);
+        for (int k = 0; k < arbre->nb_arete; k++)
+        {
+            arbre->liste_couple[k] = couple_tmp[k];
+        }
+        free(couple_tmp);
     }
-    return EXIT_SUCCESS;
+    return arbre;
 }

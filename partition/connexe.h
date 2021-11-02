@@ -1,18 +1,43 @@
-#ifndef __connexe_h__
-#define __connexe_h__
+#ifndef __GRAPH_MAT_H__
+#define __GRAPH_MAT_H__
 
-#include "arborescence.h"
+#include <stdio.h>
+#include <stdlib.h>
 
-int noeud_entier(int i);
-int *allocation(int *tab, int *taille);
-void ajouter(int **tab, int *taille, int *nb_elements, int i, int j);
-void draw_graph(int *noeuds, int *aretes, FILE *fichier, int nb_elements);
-void composantes_connexes(int *aretes, int nb_elements, int *classes, int *hauteurs);
+#include "const.h"
+#include "partition.h"
 
-/*
-void matrice_adjacence(int mat[LIGNES][COLONNES]);
-void graph_matrice(FILE *fichier, int mat[LIGNES][COLONNES]);
-void composantes_connexes(int mat[LIGNES][COLONNES], int *classes, int *hauteurs);
-*/
+typedef struct couple
+{
+    int a;
+    int b;
+} couple_t;
+
+typedef struct graph_couple
+{
+    int nb_noeud;
+    int nb_arete;
+    couple_t *liste_couple;
+} graph_couple_t;
+
+int main_connexe();
+
+void afficher_matrice(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT]);
+
+void init_mat_alea(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT]);
+graph_couple_t *init_graph_couple_alea();
+graph_couple_t *init_graph_couple_en_grille();
+
+void fichier_graphviz_graph_mat(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT]);
+void graphviz_affiche_graph_mat(int mat[NB_LIGNE_MAT][NB_COLONNE_MAT]);
+
+void connexe_graph_mat(int part[2][N], int hauteur[N], int mat[N][N]);
+void connexe_graph_couple(int part_connexe[2][N], int hauteur_part[N], graph_couple_t *graph);
+
+void fichier_graphviz_graph_couple(graph_couple_t *graph);
+void graphviz_affiche_graph_couple(graph_couple_t *graph);
+
+void liberer_graph_couple(graph_couple_t *graph);
+
 
 #endif

@@ -1,9 +1,11 @@
-#ifndef __kruskal_h__
-#define __kruskal_h__
+#ifndef __KRUSKAL_H__
+#define __KRUSKAL_H__
 
-#include "arborescence.h"
+#include "const.h"
 #include "connexe.h"
 
-void arbre_couvrant(int *nouv_aretes, int *nb_aretes, int *aretes, int *nb_elements, int *classes, int *hauteurs, int nouv_taille);
+int main_kruskal();
+graph_couple_t *calcul_foret_couvrant(graph_couple_t *graph);
+graph_couple_t *calcul_quasi_foret_couvrant(graph_couple_t *graph, float p);
 
 #endif
