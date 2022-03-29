@@ -10,9 +10,9 @@ Projet de fin de première d'année d'ingénieur sur le thème du **Labyrinthe**
 
 Les projets s'effectuent en trinome. Membre du groupe :
 
-   > CHIEN KAN FOON Pierre Corentin
-   > THIRION Antoine
-   > VILLEDIEU DE TORCY Mathieu
+- CHIEN KAN FOON Pierre Corentin [site](https://perso.isima.fr/~pcchienkan/)
+- THIRION Antoine [site](https://perso.isima.fr/~anthirion/)
+- VILLEDIEU DE TORCY Mathieu [site](https://perso.isima.fr/~mavilledie4)
 
 Le dépot github ne contient que mes parties et les parties communes.
 
