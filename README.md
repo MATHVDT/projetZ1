@@ -1,6 +1,6 @@
 **Projet Z1**
 
-Projet de fin d'année Z1 ISIMA
+Projet de fin d'année ZZ1 ISIMA
 
 Lien vers ma page perso dédiée au projet : https://perso.isima.fr/~mavilledie4/presentation_projet.html
 
